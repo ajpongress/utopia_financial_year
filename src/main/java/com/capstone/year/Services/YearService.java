@@ -43,6 +43,7 @@ public class YearService {
         }
 
         return new JobParametersBuilder()
+                .addLong("time.Started", System.currentTimeMillis())
                 .addString("file.input", pathInput)
                 .addString("outputPath_param", pathOutput)
                 .toJobParameters();
@@ -57,6 +58,7 @@ public class YearService {
         }
 
         return new JobParametersBuilder()
+                .addLong("time.Started", System.currentTimeMillis())
                 .addString("year_param", year)
                 .addString("file.input", pathInput)
                 .addString("outputPath_param", pathOutput)
