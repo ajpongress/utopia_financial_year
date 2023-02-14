@@ -68,6 +68,9 @@ public class BatchConfigAllYears {
                         log.info("------------------------------------------------------------------");
                         log.info(stepExecution.getSummary());
                         log.info("------------------------------------------------------------------");
+
+                        allYearsProcessor.clearAllTrackersAndCounters();
+
                         return StepExecutionListener.super.afterStep(stepExecution);
                     }
                 })

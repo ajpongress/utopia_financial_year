@@ -22,6 +22,10 @@ public class SingleYearProcessor implements ItemProcessor<YearModel, YearModel> 
 
     private static long transactionIdCounter = 0;
 
+    public void clearAllTrackersAndCounters() {
+        transactionIdCounter = 0;
+    }
+
     // ----------------------------------------------------------------------------------
     // --                                METHODS                                       --
     // ----------------------------------------------------------------------------------
