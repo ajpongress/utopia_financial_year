@@ -15,6 +15,13 @@ public class YearController {
     // --                                  SETUP                                       --
     // ----------------------------------------------------------------------------------
 
+    private static String reportsPath;
+
+    public static String getReportsPath() {
+        return reportsPath;
+    }
+
+
     @Autowired
     YearService yearService;
 
@@ -36,5 +43,13 @@ public class YearController {
     public ResponseEntity<String> oneYearAPI(@PathVariable String year, @RequestParam String source, @RequestParam String destination) {
 
         return yearService.exportSingleYear(year, source, destination);
+    }
+
+    // fraud by year
+    @GetMapping("/getfraudbyyear")
+    public ResponseEntity<String> fraudByYearAPI(@RequestParam String source, @RequestParam String destination, @RequestParam String reports_destination) {
+
+        reportsPath = reports_destination;
+        return yearService.exportFraudByYear(source, destination);
     }
 }

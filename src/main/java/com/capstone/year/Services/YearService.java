@@ -1,6 +1,7 @@
 package com.capstone.year.Services;
 
 import com.capstone.year.Configurations.BatchConfigAllYears;
+import com.capstone.year.Configurations.BatchConfigFraudByYear;
 import com.capstone.year.Configurations.BatchConfigSingleYear;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -34,7 +35,10 @@ public class YearService {
     @Autowired
     BatchConfigSingleYear batchConfigSingleYear;
 
-    private JobParameters buildJobParameters_AllYears(String pathInput, String pathOutput) {
+    @Autowired
+    BatchConfigFraudByYear batchConfigFraudByYear;
+
+    private JobParameters buildJobParameters_YearDefault(String pathInput, String pathOutput) {
 
         // Check if source file.input is valid
         File file = new File(pathInput);
@@ -48,6 +52,8 @@ public class YearService {
                 .addString("outputPath_param", pathOutput)
                 .toJobParameters();
     }
+
+    // ----------------------------------------------------------------------------------
 
     private JobParameters buildJobParameters_SingleYear(String year, String pathInput, String pathOutput) {
 
@@ -75,7 +81,7 @@ public class YearService {
     public ResponseEntity<String> exportAllYears(String pathInput, String pathOutput) {
 
         try {
-            JobParameters jobParameters = buildJobParameters_AllYears(pathInput, pathOutput);
+            JobParameters jobParameters = buildJobParameters_YearDefault(pathInput, pathOutput);
             jobLauncher.run(batchConfigAllYears.job_exportAllYears(), jobParameters);
 
         } catch (NoSuchElementException e) {
@@ -94,6 +100,7 @@ public class YearService {
         return new ResponseEntity<>("Job parameters OK. Job Completed", HttpStatus.CREATED);
     }
 
+    // ----------------------------------------------------------------------------------
 
     // Export a specific year
     public ResponseEntity<String> exportSingleYear(String year, String pathInput, String pathOutput) {
@@ -101,6 +108,33 @@ public class YearService {
         try {
             JobParameters jobParameters = buildJobParameters_SingleYear(year, pathInput, pathOutput);
             jobLauncher.run(batchConfigSingleYear.job_exportSingleYear(), jobParameters);
+
+        } catch (NumberFormatException e) {
+            return new ResponseEntity<>("Year ID format invalid", HttpStatus.BAD_REQUEST);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("Requested source doesn't exist", HttpStatus.BAD_REQUEST);
+        } catch (JobExecutionAlreadyRunningException e) {
+            return new ResponseEntity<>("Job execution already running", HttpStatus.BAD_REQUEST);
+        } catch (JobRestartException e) {
+            return new ResponseEntity<>("Job restart exception", HttpStatus.BAD_REQUEST);
+        } catch (JobInstanceAlreadyCompleteException e) {
+            return new ResponseEntity<>("Job already completed", HttpStatus.BAD_REQUEST);
+        } catch (JobParametersInvalidException e) {
+            return new ResponseEntity<>("Job parameters are invalid", HttpStatus.BAD_REQUEST);
+        }
+
+        // Job successfully ran
+        return new ResponseEntity<>("Job parameters OK. Job Completed", HttpStatus.CREATED);
+    }
+
+    // ----------------------------------------------------------------------------------
+
+    // Export fraud by year
+    public ResponseEntity<String> exportFraudByYear(String pathInput, String pathOutput) {
+
+        try {
+            JobParameters jobParameters = buildJobParameters_YearDefault(pathInput, pathOutput);
+            jobLauncher.run(batchConfigFraudByYear.job_exportFraudByYear(), jobParameters);
 
         } catch (NumberFormatException e) {
             return new ResponseEntity<>("Year ID format invalid", HttpStatus.BAD_REQUEST);
