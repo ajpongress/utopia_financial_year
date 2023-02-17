@@ -119,7 +119,7 @@ public class BatchConfigFraudByYear {
                             BufferedWriter writer = new BufferedWriter(new FileWriter(fraudByYearReport));
 
                             // Reports file header
-                            writer.write("Year" + "\t" + "Total Transactions" + "\t" + "Fraud Transactions" + "\t\t" + "Fraud %");
+                            writer.write("Year" + " | " + "Total Transactions" + " | " + "Fraud Transactions" + " | " + "Fraud %");
                             writer.newLine();
                             writer.newLine();
 
@@ -134,10 +134,10 @@ public class BatchConfigFraudByYear {
                                 adjFraudPercentage = df.format(fraudPercentage);
 
                                 writer.write("" +
-                                        year + "\t" + // print the year
-                                        tempHashMap.get(year).get(0) + "\t\t\t\t" + // print total transactions for that year
-                                        tempHashMap.get(year).get(1) + "\t\t\t\t\t\t" + // print total fraud transactions for that year
-                                        adjFraudPercentage
+                                        year + "\t\t" + // print the year
+                                        tempHashMap.get(year).get(0) + "\t\t" + // print total transactions for that year
+                                        tempHashMap.get(year).get(1) + "\t\t" + // print total fraud transactions for that year
+                                        adjFraudPercentage // print fraud % of total transactions
                                 );
                                 writer.newLine();
                             }
