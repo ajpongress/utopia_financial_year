@@ -3,6 +3,7 @@ package com.capstone.year;
 import com.capstone.year.Classifiers.YearClassifier;
 import com.capstone.year.Configurations.BatchConfigFraudByYear;
 import com.capstone.year.Models.YearModel;
+import com.capstone.year.PathHandlers.ReportsPathHandler;
 import com.capstone.year.Processors.FraudByYearProcessor;
 import com.capstone.year.Readers.YearReaderCSV;
 import com.capstone.year.TaskExecutors.TaskExecutor;
@@ -30,7 +31,8 @@ import java.io.File;
         YearReaderCSV.class,
         FraudByYearProcessor.class,
         YearCompositeWriter.class,
-        TaskExecutor.class
+        TaskExecutor.class,
+        ReportsPathHandler.class
 })
 @EnableAutoConfiguration
 
@@ -49,6 +51,8 @@ public class IntegrationTests_FraudByYear {
     // Hardcoded year - matches first year in test_input.csv source with fraud
     private String year = "2010";
     private String INPUT = "src/test/resources/input/test_input_fraud.csv";
+    private String EXPECTED_REPORTS_OUTPUT = "src/test/resources/output/expected_output_fraudReports";
+    private String REPORTS_OUTPUT = "src/test/resources/output/years_with_fraud/fraud_by_year_report";
     private String EXPECTED_OUTPUT = "src/test/resources/output/expected_output_FraudByYear.xml";
     private String ACTUAL_OUTPUT = "src/test/resources/output/years_with_fraud";
 
@@ -62,6 +66,7 @@ public class IntegrationTests_FraudByYear {
         return new JobParametersBuilder()
                 .addString("file.input", INPUT)
                 .addString("outputPath_param", ACTUAL_OUTPUT)
+                .addString("reportsPath_param", REPORTS_OUTPUT)
                 .toJobParameters();
     }
 
@@ -82,7 +87,9 @@ public class IntegrationTests_FraudByYear {
         // ----- Assertions -----
         File testInputFile = new File(INPUT);
         File testOutputFileExpected = new File(EXPECTED_OUTPUT);
+        File testOutputReportsFileExpected = new File(EXPECTED_REPORTS_OUTPUT);
         File testOutputFileActual = new File(ACTUAL_OUTPUT + "/year_" + year + "_transactions.xml");
+        File testOutputReportsFileActual = new File(REPORTS_OUTPUT);
 
         // Match job names
         Assertions.assertEquals("exportFraudByYearJob", actualJobInstance.getJobName());
@@ -96,13 +103,25 @@ public class IntegrationTests_FraudByYear {
         // Verify output (expected) file is valid and can be read
         Assertions.assertTrue(FileUtil.canReadFile(testOutputFileExpected));
 
+        // Verify reports output (expected) file is valid and can be read
+        Assertions.assertTrue(FileUtil.canReadFile(testOutputReportsFileExpected));
+
         // Verify output (actual) file is valid and can be read
         Assertions.assertTrue(FileUtil.canReadFile(testOutputFileActual));
+
+        // Verify reports output (actual) file is valid and can be read
+        Assertions.assertTrue(FileUtil.canReadFile(testOutputReportsFileActual));
 
         // Verify expected and actual output files match (file _1)
         Assertions.assertEquals(
                 FileUtils.readFileToString(testOutputFileExpected, "utf-8"),
                 FileUtils.readFileToString(testOutputFileActual, "utf-8"),
+                "============================== FILE MISMATCH ==============================");
+
+        // Verify expected and actual reports files match
+        Assertions.assertEquals(
+                FileUtils.readFileToString(testOutputReportsFileExpected, "utf-8"),
+                FileUtils.readFileToString(testOutputReportsFileActual, "utf-8"),
                 "============================== FILE MISMATCH ==============================");
     }
 }
