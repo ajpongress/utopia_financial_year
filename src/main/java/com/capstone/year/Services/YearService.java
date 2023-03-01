@@ -71,7 +71,23 @@ public class YearService {
                 .toJobParameters();
     }
 
+    // ----------------------------------------------------------------------------------
 
+    private JobParameters buildJobParameters_YearsWithReports(String pathInput, String pathOutput, String reports_destination) {
+
+        // Check if source file.input is valid
+        File file = new File(pathInput);
+        if (!file.exists()) {
+            throw new ItemStreamException("Requested source doesn't exist");
+        }
+
+        return new JobParametersBuilder()
+                .addLong("time.Started", System.currentTimeMillis())
+                .addString("file.input", pathInput)
+                .addString("outputPath_param", pathOutput)
+                .addString("reportsPath_param", reports_destination)
+                .toJobParameters();
+    }
 
     // ----------------------------------------------------------------------------------
     // --                                METHODS                                       --
@@ -130,10 +146,10 @@ public class YearService {
     // ----------------------------------------------------------------------------------
 
     // Export fraud by year
-    public ResponseEntity<String> exportFraudByYear(String pathInput, String pathOutput) {
+    public ResponseEntity<String> exportFraudByYear(String pathInput, String pathOutput, String reports_destination) {
 
         try {
-            JobParameters jobParameters = buildJobParameters_YearDefault(pathInput, pathOutput);
+            JobParameters jobParameters = buildJobParameters_YearsWithReports(pathInput, pathOutput, reports_destination);
             jobLauncher.run(batchConfigFraudByYear.job_exportFraudByYear(), jobParameters);
 
         } catch (NumberFormatException e) {

@@ -50,6 +50,6 @@ public class YearController {
     public ResponseEntity<String> fraudByYearAPI(@RequestParam String source, @RequestParam String destination, @RequestParam String reports_destination) {
 
         reportsPath = reports_destination;
-        return yearService.exportFraudByYear(source, destination);
+        return yearService.exportFraudByYear(source, destination, reports_destination);
     }
 }

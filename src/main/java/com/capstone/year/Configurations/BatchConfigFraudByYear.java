@@ -3,6 +3,7 @@ package com.capstone.year.Configurations;
 import com.capstone.year.Classifiers.YearClassifier;
 import com.capstone.year.Controllers.YearController;
 import com.capstone.year.Models.YearModel;
+import com.capstone.year.PathHandlers.ReportsPathHandler;
 import com.capstone.year.Processors.FraudByYearProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
@@ -79,6 +80,9 @@ public class BatchConfigFraudByYear {
     @Autowired
     private YearClassifier transactionTypeClassifier;
 
+    @Autowired
+    private ReportsPathHandler reportsPathHandler;
+
 
 
     // ----------------------------------------------------------------------------------
@@ -101,8 +105,9 @@ public class BatchConfigFraudByYear {
                         transactionTypeClassifier.closeAllwriters();
 
                         // Create reports file using reports file path from Controller API call
-                        String filePath = YearController.getReportsPath();
-                        File fraudByYearReport = new File(filePath);
+//                        String filePath = YearController.getReportsPath();
+//                        File fraudByYearReport = new File(filePath);
+                        File fraudByYearReport = new File(reportsPathHandler.getReportsPath());
 
                         // Make copy of HashMap from fraud by year processor (holds total transactions and total fraud transactions per year)
                         // Sort HashMap
@@ -119,7 +124,7 @@ public class BatchConfigFraudByYear {
                             BufferedWriter writer = new BufferedWriter(new FileWriter(fraudByYearReport));
 
                             // Reports file header
-                            writer.write("Year" + " | " + "Total Transactions" + " | " + "Fraud Transactions" + " | " + "Fraud %");
+                            writer.write("Year - Total Transactions - Fraud Transactions - Fraud %");
                             writer.newLine();
                             writer.newLine();
 
